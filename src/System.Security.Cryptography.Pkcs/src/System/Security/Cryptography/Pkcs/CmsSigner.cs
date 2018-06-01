@@ -13,7 +13,11 @@ namespace System.Security.Cryptography.Pkcs
 {
     public sealed class CmsSigner
     {
+#if MONO
+        private static readonly Oid s_defaultAlgorithm = Oid.FromOidValue(Oids.Sha1, OidGroup.HashAlgorithm);
+#else
         private static readonly Oid s_defaultAlgorithm = Oid.FromOidValue(Oids.Sha256, OidGroup.HashAlgorithm);
+#endif
 
         private SubjectIdentifierType _signerIdentifierType;
 

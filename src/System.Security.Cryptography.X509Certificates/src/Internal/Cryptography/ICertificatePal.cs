@@ -10,7 +10,9 @@ using System.Text;
 
 namespace Internal.Cryptography
 {
-    internal interface ICertificatePal : IDisposable
+#if MONO
+#if INSIDE_CORLIB
+    internal interface ICertificatePalV1 : IDisposable
     {
         bool HasPrivateKey { get; }
         IntPtr Handle { get; }
@@ -28,6 +30,17 @@ namespace Internal.Cryptography
         int Version { get; }
         bool Archived { get; set; }
         string FriendlyName { get; set; }
+    }
+#endif
+#endif
+
+#if !INSIDE_CORLIB
+#if MONO
+    internal interface ICertificatePal : ICertificatePalV1, IDisposable
+#else
+    internal interface ICertificatePal : IDisposable
+#endif
+    {
         X500DistinguishedName SubjectName { get; }
         X500DistinguishedName IssuerName { get; }
         IEnumerable<X509Extension> Extensions { get; }
@@ -40,4 +53,5 @@ namespace Internal.Cryptography
         ICertificatePal CopyWithPrivateKey(ECDsa privateKey);
         ICertificatePal CopyWithPrivateKey(RSA privateKey);
     }
+#endif
 }

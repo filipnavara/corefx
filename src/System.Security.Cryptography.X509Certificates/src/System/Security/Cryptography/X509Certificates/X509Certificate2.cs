@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 
 namespace System.Security.Cryptography.X509Certificates
 {
@@ -43,6 +44,62 @@ namespace System.Security.Cryptography.X509Certificates
         {
         }
 
+#if MONO
+        public X509Certificate2(byte[] data)
+        {
+            if (data != null && data.Length != 0)
+            {
+                // For compat reasons, this constructor treats passing a null or empty data set as the same as calling the nullary constructor.
+                using (var safePasswordHandle = new SafePasswordHandle((string)null))
+                {
+                    base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(data, safePasswordHandle, X509KeyStorageFlags.DefaultKeySet);
+                }
+            }
+        }
+
+        public X509Certificate2(byte[] rawData, string password)
+            : this(rawData, password, X509KeyStorageFlags.DefaultKeySet)
+        {
+        }
+
+        [System.CLSCompliantAttribute(false)]
+        public X509Certificate2(byte[] rawData, SecureString password)
+            : this(rawData, password, X509KeyStorageFlags.DefaultKeySet)
+        {
+        }
+
+        public X509Certificate2(byte[] rawData, string password, X509KeyStorageFlags keyStorageFlags)
+        {
+            if (rawData == null || rawData.Length == 0)
+                throw new ArgumentException(SR.Arg_EmptyOrNullArray, nameof(rawData));
+ 
+            ValidateKeyStorageFlags(keyStorageFlags);
+
+            using (var safePasswordHandle = new SafePasswordHandle(password))
+            {
+                base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(rawData, safePasswordHandle, keyStorageFlags);
+            }
+        }
+
+        [System.CLSCompliantAttribute(false)]
+        public X509Certificate2(byte[] rawData, SecureString password, X509KeyStorageFlags keyStorageFlags)
+        {
+            if (rawData == null || rawData.Length == 0)
+                throw new ArgumentException(SR.Arg_EmptyOrNullArray, nameof(rawData));
+
+            ValidateKeyStorageFlags(keyStorageFlags);
+
+            using (var safePasswordHandle = new SafePasswordHandle(password))
+            {
+                base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(rawData, safePasswordHandle, keyStorageFlags);
+            }
+        }
+
+        public X509Certificate2(IntPtr handle)
+        {
+            base.Pal = Internal.Cryptography.Pal.CertificatePal.FromHandle(handle);
+        }
+#else
         public X509Certificate2(byte[] rawData)
             : base(rawData)
         {
@@ -74,9 +131,10 @@ namespace System.Security.Cryptography.X509Certificates
             : base(handle)
         {
         }
+#endif
 
         internal X509Certificate2(ICertificatePal pal)
-            : base(pal)
+            : base((ICertificatePalV1)pal)
         {
         }
 
@@ -118,6 +176,10 @@ namespace System.Security.Cryptography.X509Certificates
         {
             throw new PlatformNotSupportedException();
         }
+
+#if MONO
+        new internal ICertificatePal Pal { get { return (ICertificatePal)base.Pal; } }
+#endif
 
         public bool Archived
         {

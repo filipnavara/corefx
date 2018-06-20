@@ -13,6 +13,6 @@ internal static partial class Interop
         internal const string LibSystemKernel = "/usr/lib/system/libsystem_kernel";
         internal const string Odbc32 = "libodbc.2.dylib";
         internal const string SystemConfigurationLibrary = "/System/Library/Frameworks/SystemConfiguration.framework/SystemConfiguration";
-        internal const string AppleCryptoNative = "System.Security.Cryptography.Native.Apple";
+        internal const string AppleCryptoNative = "System.Native";// "System.Security.Cryptography.Native.Apple";
     }
 }

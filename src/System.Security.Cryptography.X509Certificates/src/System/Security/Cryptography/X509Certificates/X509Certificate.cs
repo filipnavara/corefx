@@ -5,7 +5,7 @@
 using Internal.Cryptography;
 using Internal.Cryptography.Pal;
 using Microsoft.Win32.SafeHandles;
-using System.Diagnostics;
+using System.Diagnostics.Private;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
@@ -37,7 +37,7 @@ namespace System.Security.Cryptography.X509Certificates
             _lazyNotBefore = DateTime.MinValue;
             _lazyNotAfter = DateTime.MinValue;
 
-            ICertificatePal pal = Pal;
+            var pal = Pal;
             Pal = null;
             if (pal != null)
                 pal.Dispose();
@@ -102,7 +102,11 @@ namespace System.Security.Cryptography.X509Certificates
             Pal = CertificatePal.FromHandle(handle);
         }
 
+#if MONO
+        internal X509Certificate(ICertificatePalV1 pal)
+#else
         internal X509Certificate(ICertificatePal pal)
+#endif
         {
             Debug.Assert(pal != null);
             Pal = pal;
@@ -317,6 +321,7 @@ namespace System.Security.Cryptography.X509Certificates
             return GetRawCertHash().CloneByteArray();
         }
 
+#if netcoreapp
         public virtual byte[] GetCertHash(HashAlgorithmName hashAlgorithm)
         {
             ThrowIfInvalid();
@@ -341,6 +346,7 @@ namespace System.Security.Cryptography.X509Certificates
                 return hasher.TryGetHashAndReset(destination, out bytesWritten);
             }
         }
+#endif
 
         public virtual string GetCertHashString()
         {
@@ -348,12 +354,14 @@ namespace System.Security.Cryptography.X509Certificates
             return GetRawCertHash().ToHexStringUpper();
         }
 
+#if netcoreapp
         public virtual string GetCertHashString(HashAlgorithmName hashAlgorithm)
         {
             ThrowIfInvalid();
 
             return GetCertHash(hashAlgorithm).ToHexStringUpper();
         }
+#endif
 
         // Only use for internal purposes when the returned byte[] will not be mutated
         private byte[] GetRawCertHash()
@@ -451,7 +459,9 @@ namespace System.Security.Cryptography.X509Certificates
         {
             ThrowIfInvalid();
 
-            return GetRawSerialNumber().ToHexStringUpper();
+            byte[] serialNumber = GetRawSerialNumber().CloneByteArray();
+            Array.Reverse(serialNumber);
+            return serialNumber.ToHexStringUpper();
         }
 
         // Only use for internal purposes when the returned byte[] will not be mutated
@@ -558,7 +568,11 @@ namespace System.Security.Cryptography.X509Certificates
             throw new PlatformNotSupportedException(SR.NotSupported_ImmutableX509Certificate);
         }
 
+#if MONO
+        internal ICertificatePalV1 Pal { get; set; }
+#else
         internal ICertificatePal Pal { get; private set; }
+#endif
 
         internal DateTime GetNotAfter()
         {

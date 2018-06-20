@@ -19,6 +19,10 @@ namespace System.Security.Cryptography
         private readonly HashAlgorithmName _hashAlgorithmName;
         private readonly int _hLen;
 
+#if MONO
+        private static RandomNumberGenerator _rng = RandomNumberGenerator.Create();
+#endif
+
         private RsaPaddingProcessor(HashAlgorithmName hashAlgorithmName, int hLen)
         {
             _hashAlgorithmName = hashAlgorithmName;
@@ -40,6 +44,7 @@ namespace System.Security.Cryptography
                 {
                     using (IncrementalHash hasher = IncrementalHash.CreateHash(hashAlgorithmName))
                     {
+#if !MONO
                         // SHA-2-512 is the biggest we expect
                         Span<byte> stackDest = stackalloc byte[512 / 8];
 
@@ -47,6 +52,7 @@ namespace System.Security.Cryptography
                         {
                             return new RsaPaddingProcessor(hashAlgorithmName, bytesWritten);
                         }
+#endif
 
                         byte[] big = hasher.GetHashAndReset();
                         return new RsaPaddingProcessor(hashAlgorithmName, big.Length);
@@ -77,7 +83,13 @@ namespace System.Security.Cryptography
             destination[ps.Length + 2] = 0;
 
             // 2(a). Fill PS with random data from a CSPRNG, but no zero-values.
+#if MONO
+            var tempPs = new byte[ps.Length];
+            _rng.GetBytes(tempPs);
+            tempPs.CopyTo(ps);
+#else
             FillNonZeroBytes(ps);
+#endif
 
             source.CopyTo(mInEM);
         }
@@ -136,7 +148,13 @@ namespace System.Security.Cryptography
                     source.CopyTo(mDest);
 
                     // 2(d)
+#if MONO
+                    var tempSeed = new byte[seed.Length];
+                    _rng.GetBytes(tempSeed);
+                    tempSeed.CopyTo(seed);
+#else
                     RandomNumberGenerator.Fill(seed);
+#endif
 
                     // 2(e)
                     dbMask = ArrayPool<byte>.Shared.Rent(db.Length);
@@ -309,8 +327,13 @@ namespace System.Security.Cryptography
             using (IncrementalHash hasher = IncrementalHash.CreateHash(_hashAlgorithmName))
             {
                 // 4. Generate a random salt of length sLen
+#if MONO
+                byte[] salt = new byte[sLen];
+                _rng.GetBytes(salt);
+#else
                 Span<byte> salt = stackalloc byte[sLen];
                 RandomNumberGenerator.Fill(salt);
+#endif
 
                 // 5. Let M' = an octet string of 8 zeros concat mHash concat salt
                 // 6. Let H = Hash(M')
@@ -505,10 +528,12 @@ namespace System.Security.Cryptography
             }
         }
 
+#if !MONO
         // This is a copy of RandomNumberGeneratorImplementation.GetNonZeroBytes, but adapted
         // to the object-less RandomNumberGenerator.Fill.
         private static void FillNonZeroBytes(Span<byte> data)
         {
+            _rng.GetNonZeroBytes(data);
             while (data.Length > 0)
             {
                 // Fill the remaining portion of the span with random bytes.
@@ -539,6 +564,7 @@ namespace System.Security.Cryptography
                 data = data.Slice(indexOfFirst0Byte);
             }
         }
+#endif
 
         /// <summary>
         /// Bitwise XOR of <paramref name="b"/> into <paramref name="a"/>.

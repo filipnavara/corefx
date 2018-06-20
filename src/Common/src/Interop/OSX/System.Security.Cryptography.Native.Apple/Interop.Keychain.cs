@@ -29,6 +29,13 @@ internal static partial class Interop
             out SafeTemporaryKeychainHandle keychain);
 
         [DllImport(Libraries.AppleCryptoNative)]
+        private static extern int AppleCryptoNative_SecKeychainCreate(
+            string path,
+            int utf8PassphraseLength,
+            byte[] utf8Passphrase,
+            out SafeKeychainHandle keychain);
+
+        [DllImport(Libraries.AppleCryptoNative)]
         private static extern int AppleCryptoNative_SecKeychainDelete(IntPtr keychain);
 
         [DllImport(Libraries.AppleCryptoNative)]
@@ -159,6 +166,24 @@ internal static partial class Interop
 
             Debug.Fail($"Unexpected result from AppleCryptoNative_SecKeychainEnumerateCerts: {result}");
             throw new CryptographicException();
+        }
+
+        internal static SafeKeychainHandle CreateKeychain(string keychainPath)
+        {
+            SafeKeychainHandle keychain;
+            int osStatus = AppleCryptoNative_SecKeychainCreate(
+                keychainPath,
+                0,
+                Array.Empty<byte>(),
+                out keychain);
+
+            if (osStatus == 0)
+            {
+                return keychain;
+            }
+
+            keychain.Dispose();
+            throw CreateExceptionForOSStatus(osStatus);
         }
 
         internal static SafeTemporaryKeychainHandle CreateTemporaryKeychain()

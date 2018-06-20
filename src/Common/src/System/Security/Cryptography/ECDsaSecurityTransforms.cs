@@ -117,6 +117,7 @@ namespace System.Security.Cryptography
                     return ieeeFormatSignature;
                 }
 
+#if netcoreapp
                 public override bool TrySignHash(ReadOnlySpan<byte> source, Span<byte> destination, out int bytesWritten)
                 {
                     SecKeyPair keys = GetKeys();
@@ -144,6 +145,7 @@ namespace System.Security.Cryptography
                         return false;
                     }
                 }
+#endif
 
                 public override bool VerifyHash(byte[] hash, byte[] signature)
                 {
@@ -152,14 +154,19 @@ namespace System.Security.Cryptography
                     if (signature == null)
                         throw new ArgumentNullException(nameof(signature));
 
-                    return VerifyHash((ReadOnlySpan<byte>)hash, (ReadOnlySpan<byte>)signature);
+                    return Interop.AppleCrypto.VerifySignature(
+                        GetKeys().PublicKey,
+                        hash,
+                        AsymmetricAlgorithmHelpers.ConvertIeee1363ToDer(signature));
                 }
 
+#if netcoreapp
                 public override bool VerifyHash(ReadOnlySpan<byte> hash, ReadOnlySpan<byte> signature) =>
                     Interop.AppleCrypto.VerifySignature(
                         GetKeys().PublicKey,
                         hash,
                         AsymmetricAlgorithmHelpers.ConvertIeee1363ToDer(signature));
+#endif
 
                 protected override byte[] HashData(byte[] data, int offset, int count, HashAlgorithmName hashAlgorithm) =>
                     AsymmetricAlgorithmHelpers.HashData(data, offset, count, hashAlgorithm);
@@ -167,8 +174,10 @@ namespace System.Security.Cryptography
                 protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm) =>
                     AsymmetricAlgorithmHelpers.HashData(data, hashAlgorithm);
 
+#if netcoreapp
                 protected override bool TryHashData(ReadOnlySpan<byte> source, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) =>
                     AsymmetricAlgorithmHelpers.TryHashData(source, destination, hashAlgorithm, out bytesWritten);
+#endif
 
                 protected override void Dispose(bool disposing)
                 {

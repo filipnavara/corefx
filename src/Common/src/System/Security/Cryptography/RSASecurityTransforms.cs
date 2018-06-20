@@ -181,7 +181,11 @@ namespace System.Security.Cryptography
                 return output;
             }
 
+#if netcoreapp
             public override bool TryEncrypt(ReadOnlySpan<byte> data, Span<byte> destination, RSAEncryptionPadding padding, out int bytesWritten)
+#else
+            private bool TryEncrypt(ReadOnlySpan<byte> data, Span<byte> destination, RSAEncryptionPadding padding, out int bytesWritten)
+#endif
             {
                 if (padding == null)
                 {
@@ -309,6 +313,7 @@ namespace System.Security.Cryptography
                 }
             }
 
+#if netcoreapp
             public override bool TryDecrypt(ReadOnlySpan<byte> data, Span<byte> destination, RSAEncryptionPadding padding, out int bytesWritten)
             {
                 if (padding == null)
@@ -325,6 +330,7 @@ namespace System.Security.Cryptography
 
                 return TryDecrypt(keys.PrivateKey, data, destination, padding, out bytesWritten);
             }
+#endif
 
             private bool TryDecrypt(
                 SafeSecKeyRefHandle privateKey,
@@ -433,7 +439,11 @@ namespace System.Security.Cryptography
                 return output;
             }
 
+#if netcoreapp
             public override bool TrySignHash(ReadOnlySpan<byte> hash, Span<byte> destination, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding, out int bytesWritten)
+#else
+            private bool TrySignHash(ReadOnlySpan<byte> hash, Span<byte> destination, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding, out int bytesWritten)
+#endif
             {
                 if (string.IsNullOrEmpty(hashAlgorithm.Name))
                 {
@@ -534,11 +544,13 @@ namespace System.Security.Cryptography
                     throw new ArgumentNullException(nameof(signature));
                 }
 
+#if netcoreapp
                 return VerifyHash((ReadOnlySpan<byte>)hash, (ReadOnlySpan<byte>)signature, hashAlgorithm, padding);
             }
 
             public override bool VerifyHash(ReadOnlySpan<byte> hash, ReadOnlySpan<byte> signature, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding)
             {
+#endif
                 if (string.IsNullOrEmpty(hashAlgorithm.Name))
                 {
                     throw HashAlgorithmNameNullOrEmpty();
@@ -606,8 +618,10 @@ namespace System.Security.Cryptography
             protected override byte[] HashData(Stream data, HashAlgorithmName hashAlgorithm) =>
                 AsymmetricAlgorithmHelpers.HashData(data, hashAlgorithm);
 
+#if netcoreapp
             protected override bool TryHashData(ReadOnlySpan<byte> data, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten) =>
                 AsymmetricAlgorithmHelpers.TryHashData(data, destination, hashAlgorithm, out bytesWritten);
+#endif
 
             protected override void Dispose(bool disposing)
             {

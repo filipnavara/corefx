@@ -40,6 +40,7 @@ namespace Internal.Cryptography
             }
         }
 
+#if netcoreapp
         public static bool TryHashData(ReadOnlySpan<byte> source, Span<byte> destination, HashAlgorithmName hashAlgorithm, out int bytesWritten)
         {
             // The classes that call us are sealed and their base class has checked this already.
@@ -50,6 +51,7 @@ namespace Internal.Cryptography
                 return hasher.TryComputeHash(source, destination, out bytesWritten);
             }
         }
+#endif
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA5351", Justification = "MD5 is used when the user asks for it.")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA5350", Justification = "SHA1 is used when the user asks for it.")]

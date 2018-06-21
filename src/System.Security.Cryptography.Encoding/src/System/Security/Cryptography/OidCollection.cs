@@ -13,10 +13,21 @@ namespace System.Security.Cryptography
         public OidCollection()
         {
             _list = new List<Oid>();
+            _copyOnWrite = false;
+        }
+
+        private OidCollection(OidCollection oids)
+        {
+            _list = oids._list;
+            _copyOnWrite = true;
         }
 
         public int Add(Oid oid)
         {
+            if (_copyOnWrite) {
+                _list = new List<Oid>(_list);
+                _copyOnWrite = false;
+            }
             int count = _list.Count;
             _list.Add(oid);
             return count;
@@ -81,10 +92,17 @@ namespace System.Security.Cryptography
             _list.CopyTo(array, index);
         }
 
+        internal OidCollection AsCopyOnWrite()
+        {
+            return new OidCollection(this);
+        }
+
         public bool IsSynchronized => false;
 
         public object SyncRoot => this;
 
-        private readonly List<Oid> _list;
+        private List<Oid> _list;
+
+        private bool _copyOnWrite;
     }
 }

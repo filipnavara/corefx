@@ -27,7 +27,7 @@ PKCS7* CryptoNative_D2IPkcs7Bio(BIO* bp)
 PKCS7* CryptoNative_Pkcs7CreateSigned()
 {
 #ifdef OPENSSL_IS_BORINGSSL
-    assert(false);
+    // assert(false);
     return NULL;
 #else
     PKCS7* pkcs7 = PKCS7_new();

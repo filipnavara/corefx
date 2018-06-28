@@ -32,15 +32,11 @@ ASN1_STRING* CryptoNative_DecodeAsn1TypeBytes(const uint8_t* buf, int32_t len, A
         return NULL;
     }
 
-#ifdef OPENSSL_IS_BORINGSSL
-    #pragma unused(buf)
-    #pragma unused(len)
-    #pragma unused(type)
-    assert(false);
-    return NULL;
-#else
-    return d2i_ASN1_type_bytes(NULL, &buf, len, (int32_t)type);
-#endif
+    ASN1_STRING* string = ASN1_STRING_type_new((int32_t)type);
+    if (string)
+        ASN1_STRING_set(string, buf, len);
+    
+    return string;
 }
 
 int32_t CryptoNative_Asn1StringPrintEx(BIO* out, ASN1_STRING* str, Asn1StringPrintFlags flags)

@@ -26,6 +26,10 @@ PKCS7* CryptoNative_D2IPkcs7Bio(BIO* bp)
 
 PKCS7* CryptoNative_Pkcs7CreateSigned()
 {
+#ifdef OPENSSL_IS_BORINGSSL
+    assert(false);
+    return NULL;
+#else
     PKCS7* pkcs7 = PKCS7_new();
 
     if (pkcs7 == NULL)
@@ -40,6 +44,7 @@ PKCS7* CryptoNative_Pkcs7CreateSigned()
     }
 
     return pkcs7;
+#endif
 }
 
 void CryptoNative_Pkcs7Destroy(PKCS7* p7)
@@ -72,12 +77,18 @@ int32_t CryptoNative_GetPkcs7Certificates(PKCS7* p7, X509Stack** certs)
 
 int32_t CryptoNative_Pkcs7AddCertificate(PKCS7* p7, X509* x509)
 {
+#ifdef OPENSSL_IS_BORINGSSL
+    #pragma unused(p7)
+    #pragma unused(x509)
+    return 0;
+#else
     if (p7 == NULL || x509 == NULL)
     {
         return 0;
     }
 
     return PKCS7_add_certificate(p7, x509);
+#endif
 }
 
 int32_t CryptoNative_GetPkcs7DerSize(PKCS7* p7)

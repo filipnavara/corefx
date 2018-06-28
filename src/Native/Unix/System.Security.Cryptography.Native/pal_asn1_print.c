@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 #include "pal_asn1_print.h"
+#include "pal_utilities.h"
 
 c_static_assert(PAL_B_ASN1_NUMERICSTRING == B_ASN1_NUMERICSTRING);
 c_static_assert(PAL_B_ASN1_PRINTABLESTRING == B_ASN1_PRINTABLESTRING);
@@ -31,7 +32,15 @@ ASN1_STRING* CryptoNative_DecodeAsn1TypeBytes(const uint8_t* buf, int32_t len, A
         return NULL;
     }
 
+#ifdef OPENSSL_IS_BORINGSSL
+    #pragma unused(buf)
+    #pragma unused(len)
+    #pragma unused(type)
+    assert(false);
+    return NULL;
+#else
     return d2i_ASN1_type_bytes(NULL, &buf, len, (int32_t)type);
+#endif
 }
 
 int32_t CryptoNative_Asn1StringPrintEx(BIO* out, ASN1_STRING* str, Asn1StringPrintFlags flags)

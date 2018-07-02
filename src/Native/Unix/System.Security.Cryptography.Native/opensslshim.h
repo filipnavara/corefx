@@ -127,6 +127,8 @@ void SSL_get0_alpn_selected(const SSL* ssl, const unsigned char** protocol, unsi
     PER_FUNCTION_BLOCK(ASN1_OCTET_STRING_set, true) \
     PER_FUNCTION_BLOCK(ASN1_STRING_free, true) \
     PER_FUNCTION_BLOCK(ASN1_STRING_print_ex, true) \
+    PER_FUNCTION_BLOCK(ASN1_STRING_set, true) \
+    PER_FUNCTION_BLOCK(ASN1_STRING_type_new, true) \
     PER_FUNCTION_BLOCK(BASIC_CONSTRAINTS_free, true) \
     PER_FUNCTION_BLOCK(BIO_ctrl, true) \
     PER_FUNCTION_BLOCK(BIO_ctrl_pending, true) \
@@ -283,6 +285,7 @@ void SSL_get0_alpn_selected(const SSL* ssl, const unsigned char** protocol, unsi
     PER_FUNCTION_BLOCK(OBJ_txt2obj, true) \
     PER_FUNCTION_BLOCK(OPENSSL_add_all_algorithms_conf, true) \
     PER_FUNCTION_BLOCK(OPENSSL_cleanse, true) \
+    PER_FUNCTION_BLOCK(OpenSSL_version_num, false) \
     PER_FUNCTION_BLOCK(PEM_read_bio_PKCS7, true) \
     PER_FUNCTION_BLOCK(PEM_read_bio_X509_AUX, true) \
     PER_FUNCTION_BLOCK(PEM_read_bio_X509_CRL, true) \
@@ -353,7 +356,7 @@ void SSL_get0_alpn_selected(const SSL* ssl, const unsigned char** protocol, unsi
     PER_FUNCTION_BLOCK(SSL_set_connect_state, true) \
     PER_FUNCTION_BLOCK(SSL_shutdown, true) \
     PER_FUNCTION_BLOCK(SSL_state, true) \
-    PER_FUNCTION_BLOCK(SSLeay_version, true) \
+    PER_FUNCTION_BLOCK(SSLeay, false) \
     PER_FUNCTION_BLOCK(SSLv23_method, true) \
     PER_FUNCTION_BLOCK(SSL_write, true) \
     PER_FUNCTION_BLOCK(TLSv1_1_method, true) \
@@ -427,6 +430,8 @@ FOR_ALL_OPENSSL_FUNCTIONS
 #define ASN1_OCTET_STRING_set ASN1_OCTET_STRING_set_ptr
 #define ASN1_STRING_free ASN1_STRING_free_ptr
 #define ASN1_STRING_print_ex ASN1_STRING_print_ex_ptr
+#define ASN1_STRING_set ASN1_STRING_set_ptr
+#define ASN1_STRING_type_new ASN1_STRING_type_new_ptr
 #define BASIC_CONSTRAINTS_free BASIC_CONSTRAINTS_free_ptr
 #define BIO_ctrl BIO_ctrl_ptr
 #define BIO_ctrl_pending BIO_ctrl_pending_ptr
@@ -448,7 +453,6 @@ FOR_ALL_OPENSSL_FUNCTIONS
 #define CRYPTO_set_locking_callback CRYPTO_set_locking_callback_ptr
 #define d2i_ASN1_BIT_STRING d2i_ASN1_BIT_STRING_ptr
 #define d2i_ASN1_OCTET_STRING d2i_ASN1_OCTET_STRING_ptr
-#define d2i_ASN1_type_bytes d2i_ASN1_type_bytes_ptr
 #define d2i_BASIC_CONSTRAINTS d2i_BASIC_CONSTRAINTS_ptr
 #define d2i_EXTENDED_KEY_USAGE d2i_EXTENDED_KEY_USAGE_ptr
 #define d2i_PKCS12 d2i_PKCS12_ptr
@@ -583,6 +587,7 @@ FOR_ALL_OPENSSL_FUNCTIONS
 #define OBJ_txt2obj OBJ_txt2obj_ptr
 #define OPENSSL_add_all_algorithms_conf OPENSSL_add_all_algorithms_conf_ptr
 #define OPENSSL_cleanse OPENSSL_cleanse_ptr
+#define OpenSSL_version_num OpenSSL_version_num_ptr
 #define PEM_read_bio_PKCS7 PEM_read_bio_PKCS7_ptr
 #define PEM_read_bio_X509_AUX PEM_read_bio_X509_AUX_ptr
 #define PEM_read_bio_X509_CRL PEM_read_bio_X509_CRL_ptr
@@ -653,7 +658,7 @@ FOR_ALL_OPENSSL_FUNCTIONS
 #define SSL_set_connect_state SSL_set_connect_state_ptr
 #define SSL_shutdown SSL_shutdown_ptr
 #define SSL_state SSL_state_ptr
-#define SSLeay_version SSLeay_version_ptr
+#define SSLeay SSLeay_ptr
 #define SSLv23_method SSLv23_method_ptr
 #define SSL_write SSL_write_ptr
 #define TLSv1_1_method TLSv1_1_method_ptr

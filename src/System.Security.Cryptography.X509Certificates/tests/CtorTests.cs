@@ -367,8 +367,11 @@ namespace System.Security.Cryptography.X509Certificates.Tests
             }
             else // Any Unix
             {
-                Assert.Equal(0x0D07803A, ex.HResult);
-                Assert.Equal("error:0D07803A:asn1 encoding routines:ASN1_ITEM_EX_D2I:nested asn1 error", ex.Message);
+                // OpenSSL: ex.HResult == 0x0D07803A
+                // BoringSSL: ex.HResult == 0x0D00003A (no function names in error codes)
+                // OpenSSL 1.0: ex.Message == "error:0D07803A:asn1 encoding routines:ASN1_ITEM_EX_D2I:nested asn1 error"
+                // OpenSSL 1.1: ex.Message == "error:0D07803A:asn1 encoding routines:asn1_item_embed_d2i:nested asn1 error"
+                Assert.Equal(0x0D00003A, ex.HResult & 0xFF000FFF);
             }
         }
 

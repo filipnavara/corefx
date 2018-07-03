@@ -39,7 +39,7 @@ typedef enum
 } Asn1StringPrintFlags;
 
 /*
-Shims the d2i_ASN1_type_bytes method and makes it easier to invoke from managed code.
+Shims the ASN1_STRING_type_new and ASN1_STRING_type_set methods and makes it easier to invoke from managed code.
 */
 DLLEXPORT ASN1_STRING* CryptoNative_DecodeAsn1TypeBytes(const uint8_t* buf, int32_t len, Asn1StringTypeFlags type);
 

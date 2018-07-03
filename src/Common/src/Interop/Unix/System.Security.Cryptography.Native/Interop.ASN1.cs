@@ -58,9 +58,6 @@ internal static partial class Interop
         [DllImport(Libraries.CryptoNative, EntryPoint = "CryptoNative_Asn1OctetStringFree")]
         internal static extern void Asn1OctetStringFree(IntPtr o);
 
-        [DllImport(Libraries.CryptoNative, EntryPoint = "CryptoNative_Asn1StringFree")]
-        internal static extern void Asn1StringFree(IntPtr o);
-
         internal static unsafe string GetOidValue(IntPtr asn1ObjectPtr)
         {
             // OBJ_obj2txt returns the number of bytes that should have been in the answer, but it does not accept

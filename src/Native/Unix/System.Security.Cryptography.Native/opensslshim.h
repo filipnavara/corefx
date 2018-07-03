@@ -159,10 +159,7 @@ void SSL_get0_alpn_selected(const SSL* ssl, const unsigned char** protocol, unsi
     PER_FUNCTION_BLOCK(ASN1_OCTET_STRING_free, true) \
     PER_FUNCTION_BLOCK(ASN1_OCTET_STRING_new, true) \
     PER_FUNCTION_BLOCK(ASN1_OCTET_STRING_set, true) \
-    PER_FUNCTION_BLOCK(ASN1_STRING_free, true) \
     PER_FUNCTION_BLOCK(ASN1_STRING_print_ex, true) \
-    PER_FUNCTION_BLOCK(ASN1_STRING_set, true) \
-    PER_FUNCTION_BLOCK(ASN1_STRING_type_new, true) \
     PER_FUNCTION_BLOCK(BASIC_CONSTRAINTS_free, true) \
     PER_FUNCTION_BLOCK(BIO_ctrl, true) \
     PER_FUNCTION_BLOCK(BIO_ctrl_pending, true) \
@@ -520,10 +517,7 @@ FOR_ALL_OPENSSL_FUNCTIONS
 #define ASN1_OCTET_STRING_free ASN1_OCTET_STRING_free_ptr
 #define ASN1_OCTET_STRING_new ASN1_OCTET_STRING_new_ptr
 #define ASN1_OCTET_STRING_set ASN1_OCTET_STRING_set_ptr
-#define ASN1_STRING_free ASN1_STRING_free_ptr
 #define ASN1_STRING_print_ex ASN1_STRING_print_ex_ptr
-#define ASN1_STRING_set ASN1_STRING_set_ptr
-#define ASN1_STRING_type_new ASN1_STRING_type_new_ptr
 #define BASIC_CONSTRAINTS_free BASIC_CONSTRAINTS_free_ptr
 #define BIO_ctrl BIO_ctrl_ptr
 #define BIO_ctrl_pending BIO_ctrl_pending_ptr

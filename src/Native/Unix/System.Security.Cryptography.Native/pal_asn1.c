@@ -94,11 +94,6 @@ void CryptoNative_Asn1OctetStringFree(ASN1_STRING* a)
     ASN1_OCTET_STRING_free(a);
 }
 
-void CryptoNative_Asn1StringFree(ASN1_STRING* a)
-{
-    ASN1_STRING_free(a);
-}
-
 int32_t CryptoNative_GetAsn1IntegerDerSize(ASN1_INTEGER* i)
 {
     return i2d_ASN1_INTEGER(i, NULL);

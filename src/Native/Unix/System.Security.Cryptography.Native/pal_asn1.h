@@ -81,11 +81,6 @@ Direct shim to ASN1_OCTET_STRING_free.
 DLLEXPORT void CryptoNative_Asn1OctetStringFree(ASN1_STRING* a);
 
 /*
-Direct shim to ASN1_STRING_free.
-*/
-DLLEXPORT void CryptoNative_Asn1StringFree(ASN1_STRING* a);
-
-/*
 Returns the number of bytes it will take to convert
 the ASN1_INTEGER to a DER format.
 */

@@ -98,7 +98,7 @@ namespace System.Security.Cryptography.X509Certificates
 
         public X509Store(IntPtr storeHandle)
         {
-            _storePal = StorePal.FromHandle(storeHandle);
+            _storePal = X509Pal.Instance.StoreFromHandle(storeHandle);
             Debug.Assert(_storePal != null);
         }
 
@@ -125,7 +125,7 @@ namespace System.Security.Cryptography.X509Certificates
         public void Open(OpenFlags flags)
         {
             Close();
-            _storePal = StorePal.FromSystemStore(Name, Location, flags);
+            _storePal = X509Pal.Instance.StoreFromSystemStore(Name, Location, flags);
         }
 
         public X509Certificate2Collection Certificates

@@ -23,7 +23,7 @@ namespace Microsoft.Win32.SafeHandles
 
         protected override bool ReleaseHandle()
         {
-            return ChainPal.ReleaseSafeX509ChainHandle(handle);
+            return X509Pal.Instance.ReleaseSafeX509ChainHandle(handle);
         }
 
         protected override void Dispose(bool disposing)

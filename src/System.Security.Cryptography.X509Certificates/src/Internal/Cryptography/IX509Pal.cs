@@ -5,6 +5,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Win32.SafeHandles;
 
 namespace Internal.Cryptography.Pal
 {
@@ -27,5 +28,32 @@ namespace Internal.Cryptography.Pal
         byte[] EncodeX509SubjectKeyIdentifierExtension(byte[] subjectKeyIdentifier);
         void DecodeX509SubjectKeyIdentifierExtension(byte[] encoded, out byte[] subjectKeyIdentifier);
         byte[] ComputeCapiSha1OfPublicKey(PublicKey key);
+
+        ICertificatePal CertificateFromHandle(IntPtr handle);
+        ICertificatePal CertificateFromOtherCert(X509Certificate cert);
+        ICertificatePal CertificateFromBlob(byte[] rawData, SafePasswordHandle password, X509KeyStorageFlags keyStorageFlags);
+        ICertificatePal CertificateFromFile(string fileName, SafePasswordHandle password, X509KeyStorageFlags keyStorageFlags);
+
+        IChainPal ChainFromHandle(IntPtr chainContext);
+        bool ReleaseSafeX509ChainHandle(IntPtr handle);
+        IChainPal BuildChain(
+            bool useMachineContext,
+            ICertificatePal cert,
+            X509Certificate2Collection extraStore,
+            OidCollection applicationPolicy,
+            OidCollection certificatePolicy,
+            X509RevocationMode revocationMode,
+            X509RevocationFlag revocationFlag,
+            DateTime verificationTime,
+            TimeSpan timeout);
+
+        IFindPal OpenFindPal(X509Certificate2Collection findFrom, X509Certificate2Collection copyTo, bool validOnly);
+
+        IStorePal StoreFromHandle(IntPtr storeHandle);
+        ILoaderPal LoaderFromBlob(byte[] rawData, SafePasswordHandle password, X509KeyStorageFlags keyStorageFlags);
+        ILoaderPal LoaderFromFile(string fileName, SafePasswordHandle password, X509KeyStorageFlags keyStorageFlags);
+        IExportPal ExportFromCertificate(ICertificatePal cert);
+        IExportPal ExportLinkFromCertificateCollection(X509Certificate2Collection certificates);
+        IStorePal StoreFromSystemStore(string storeName, StoreLocation storeLocation, OpenFlags openFlags);
     }
 }

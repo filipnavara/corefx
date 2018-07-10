@@ -44,7 +44,7 @@ namespace Internal.Cryptography.Pal
         {
             X509Certificate2Collection results = new X509Certificate2Collection();
 
-            using (IFindPal findPal = OpenPal(coll, results, validOnly))
+            using (IFindPal findPal = X509Pal.Instance.OpenFindPal(coll, results, validOnly))
             {
                 switch (findType)
                 {

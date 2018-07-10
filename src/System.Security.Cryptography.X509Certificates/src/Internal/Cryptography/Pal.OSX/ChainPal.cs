@@ -499,10 +499,7 @@ namespace Internal.Cryptography.Pal
                 OSStatus = Interop.AppleCrypto.GetOSStatusForChainStatus(flag);
             }
         }
-    }
 
-    internal sealed partial class ChainPal
-    {
         public static IChainPal FromHandle(IntPtr chainContext)
         {
             // This is possible to do on Apple's platform, but is tricky in execution.

@@ -10,48 +10,45 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Internal.Cryptography.Pal
 {
-    internal sealed partial class StorePal
+    sealed class AppleCertLoader : ILoaderPal
     {
-        private sealed class AppleCertLoader : ILoaderPal
+        private readonly SafeCFArrayHandle _collectionHandle;
+        private readonly SafeTemporaryKeychainHandle _tmpKeychain;
+
+        public AppleCertLoader(SafeCFArrayHandle collectionHandle, SafeTemporaryKeychainHandle tmpKeychain)
         {
-            private readonly SafeCFArrayHandle _collectionHandle;
-            private readonly SafeTemporaryKeychainHandle _tmpKeychain;
+            _collectionHandle = collectionHandle;
+            _tmpKeychain = tmpKeychain;
+        }
 
-            public AppleCertLoader(SafeCFArrayHandle collectionHandle, SafeTemporaryKeychainHandle tmpKeychain)
+        public void Dispose()
+        {
+            _collectionHandle.Dispose();
+            _tmpKeychain?.Dispose();
+        }
+
+        public void MoveTo(X509Certificate2Collection collection)
+        {
+            long longCount = Interop.CoreFoundation.CFArrayGetCount(_collectionHandle);
+
+            if (longCount > int.MaxValue)
+                throw new CryptographicException();
+
+            int count = (int)longCount;
+
+            // Apple returns things in the opposite order from Windows, so read backwards.
+            for (int i = count - 1; i >= 0; i--)
             {
-                _collectionHandle = collectionHandle;
-                _tmpKeychain = tmpKeychain;
-            }
+                IntPtr handle = Interop.CoreFoundation.CFArrayGetValueAtIndex(_collectionHandle, i);
 
-            public void Dispose()
-            {
-                _collectionHandle.Dispose();
-                _tmpKeychain?.Dispose();
-            }
-
-            public void MoveTo(X509Certificate2Collection collection)
-            {
-                long longCount = Interop.CoreFoundation.CFArrayGetCount(_collectionHandle);
-
-                if (longCount > int.MaxValue)
-                    throw new CryptographicException();
-
-                int count = (int)longCount;
-
-                // Apple returns things in the opposite order from Windows, so read backwards.
-                for (int i = count - 1; i >= 0; i--)
+                if (handle != IntPtr.Zero)
                 {
-                    IntPtr handle = Interop.CoreFoundation.CFArrayGetValueAtIndex(_collectionHandle, i);
+                    ICertificatePal certPal = AppleCertificatePal.FromHandle(handle, throwOnFail: false);
 
-                    if (handle != IntPtr.Zero)
+                    if (certPal != null)
                     {
-                        ICertificatePal certPal = CertificatePal.FromHandle(handle, throwOnFail: false);
-
-                        if (certPal != null)
-                        {
-                            X509Certificate2 cert = new X509Certificate2(certPal);
-                            collection.Add(cert);
-                        }
+                        X509Certificate2 cert = new X509Certificate2(certPal);
+                        collection.Add(cert);
                     }
                 }
             }

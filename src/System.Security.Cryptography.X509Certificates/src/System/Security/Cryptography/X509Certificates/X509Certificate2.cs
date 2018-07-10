@@ -52,7 +52,7 @@ namespace System.Security.Cryptography.X509Certificates
                 // For compat reasons, this constructor treats passing a null or empty data set as the same as calling the nullary constructor.
                 using (var safePasswordHandle = new SafePasswordHandle((string)null))
                 {
-                    base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(data, safePasswordHandle, X509KeyStorageFlags.DefaultKeySet);
+                    base.Pal = X509Pal.Instance.CertificateFromBlob(data, safePasswordHandle, X509KeyStorageFlags.DefaultKeySet);
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace System.Security.Cryptography.X509Certificates
 
             using (var safePasswordHandle = new SafePasswordHandle(password))
             {
-                base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(rawData, safePasswordHandle, keyStorageFlags);
+                base.Pal = X509Pal.Instance.CertificateFromBlob(rawData, safePasswordHandle, keyStorageFlags);
             }
         }
 
@@ -91,13 +91,13 @@ namespace System.Security.Cryptography.X509Certificates
 
             using (var safePasswordHandle = new SafePasswordHandle(password))
             {
-                base.Pal = Internal.Cryptography.Pal.CertificatePal.FromBlob(rawData, safePasswordHandle, keyStorageFlags);
+                base.Pal = X509Pal.Instance.CertificateFromBlob(rawData, safePasswordHandle, keyStorageFlags);
             }
         }
 
         public X509Certificate2(IntPtr handle)
         {
-            base.Pal = Internal.Cryptography.Pal.CertificatePal.FromHandle(handle);
+            base.Pal = X509Pal.Instance.CertificateFromHandle(handle);
         }
 #else
         public X509Certificate2(byte[] rawData)

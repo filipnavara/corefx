@@ -13,7 +13,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Internal.Cryptography.Pal
 {
-    internal sealed partial class StorePal
+    sealed partial class AppleStorePal
     {
         public static IStorePal FromHandle(IntPtr storeHandle)
         {
@@ -130,7 +130,7 @@ namespace Internal.Cryptography.Pal
                 throw new CryptographicException(message);
             }
 
-            storePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", storeName + ".keychain");
+            storePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Keychains", storeName + ".keychain");
             if (File.Exists(storePath))
                 return AppleKeychainStore.OpenAndUnlockKeychain(storePath, openFlags);
 
@@ -145,7 +145,7 @@ namespace Internal.Cryptography.Pal
             return !String.IsNullOrWhiteSpace(storeName) && Path.GetFileName(storeName) == storeName;
         }
 
-        private static void ReadCollection(SafeCFArrayHandle matches, HashSet<X509Certificate2> collection)
+        internal static void ReadCollection(SafeCFArrayHandle matches, HashSet<X509Certificate2> collection)
         {
             if (matches.IsInvalid)
             {

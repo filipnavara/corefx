@@ -26,7 +26,7 @@ namespace System.Security.Cryptography.X509Certificates
 
         public X509Chain(IntPtr chainContext)
         {
-            _pal = ChainPal.FromHandle(chainContext);
+            _pal = X509Pal.Instance.ChainFromHandle(chainContext);
             Debug.Assert(_pal != null);
             _chainElements = new X509ChainElementCollection(_pal.ChainElements);
         }
@@ -115,7 +115,7 @@ namespace System.Security.Cryptography.X509Certificates
                 Reset();
 
                 X509ChainPolicy chainPolicy = ChainPolicy;
-                _pal = ChainPal.BuildChain(
+                _pal = X509Pal.Instance.BuildChain(
                     _useMachineContext,
                     certificate.Pal,
                     chainPolicy.ExtraStore,

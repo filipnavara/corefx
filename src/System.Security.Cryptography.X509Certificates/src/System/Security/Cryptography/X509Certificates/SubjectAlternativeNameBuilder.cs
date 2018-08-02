@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Cryptography.Asn1;
 using Internal.Cryptography;
 
 namespace System.Security.Cryptography.X509Certificates
@@ -11,15 +12,14 @@ namespace System.Security.Cryptography.X509Certificates
     public sealed class SubjectAlternativeNameBuilder
     {
         // Because GeneralNames is a SEQUENCE, just make a rolling list, it doesn't need to be re-sorted.
-        private readonly List<byte[][]> _encodedTlvs = new List<byte[][]>();
-        private readonly GeneralNameEncoder _generalNameEncoder = new GeneralNameEncoder();
+        private readonly List<GeneralNameAsn> _generalNames = new List<GeneralNameAsn>();
 
         public void AddEmailAddress(string emailAddress)
         {
             if (string.IsNullOrEmpty(emailAddress))
                 throw new ArgumentOutOfRangeException(nameof(emailAddress), SR.Arg_EmptyOrNullString);
 
-            _encodedTlvs.Add(_generalNameEncoder.EncodeEmailAddress(emailAddress));
+            _generalNames.Add(new GeneralNameAsn { Rfc822Name = emailAddress });
         }
 
         public void AddDnsName(string dnsName)
@@ -27,7 +27,7 @@ namespace System.Security.Cryptography.X509Certificates
             if (string.IsNullOrEmpty(dnsName))
                 throw new ArgumentOutOfRangeException(nameof(dnsName), SR.Arg_EmptyOrNullString);
 
-            _encodedTlvs.Add(_generalNameEncoder.EncodeDnsName(dnsName));
+            _generalNames.Add(new GeneralNameAsn { DnsName = dnsName });
         }
 
         public void AddUri(Uri uri)
@@ -35,7 +35,7 @@ namespace System.Security.Cryptography.X509Certificates
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
-            _encodedTlvs.Add(_generalNameEncoder.EncodeUri(uri));
+            _generalNames.Add(new GeneralNameAsn { Uri = uri.AbsoluteUri.ToString() });
         }
 
         public void AddIpAddress(IPAddress ipAddress)
@@ -43,7 +43,7 @@ namespace System.Security.Cryptography.X509Certificates
             if (ipAddress == null)
                 throw new ArgumentNullException(nameof(ipAddress));
 
-            _encodedTlvs.Add(_generalNameEncoder.EncodeIpAddress(ipAddress));
+            _generalNames.Add(new GeneralNameAsn { IPAddress = ipAddress.GetAddressBytes() });
         }
 
         public void AddUserPrincipalName(string upn)
@@ -51,15 +51,34 @@ namespace System.Security.Cryptography.X509Certificates
             if (string.IsNullOrEmpty(upn))
                 throw new ArgumentOutOfRangeException(nameof(upn), SR.Arg_EmptyOrNullString);
 
-            _encodedTlvs.Add(_generalNameEncoder.EncodeUserPrincipalName(upn));
+            byte[] otherNameValue;
+            using (AsnWriter writer = new AsnWriter(AsnEncodingRules.DER))
+            {
+                Asn1Tag explicit0 = new Asn1Tag(TagClass.ContextSpecific, 0, isConstructed: true);
+                writer.PushSequence(explicit0);
+                writer.WriteCharacterString(UniversalTagNumber.UTF8String, upn);
+                writer.PopSequence(explicit0);
+                otherNameValue = writer.Encode();
+            }
+
+            OtherNameAsn otherName = new OtherNameAsn
+            {
+                TypeId = Oids.UserPrincipalName,
+                Value = otherNameValue,
+            };
+
+            _generalNames.Add(new GeneralNameAsn { OtherName = otherName });
         }
 
         public X509Extension Build(bool critical=false)
         {
-            return new X509Extension(
-                Oids.SubjectAltName,
-                DerEncoder.ConstructSequence(_encodedTlvs),
-                critical);
+            using (AsnWriter writer = AsnSerializer.Serialize(_generalNames.ToArray(), AsnEncodingRules.DER))
+            {
+                return new X509Extension(
+                    Oids.SubjectAltName,
+                    writer.Encode(),
+                    critical);
+            }
         }
     }
 }

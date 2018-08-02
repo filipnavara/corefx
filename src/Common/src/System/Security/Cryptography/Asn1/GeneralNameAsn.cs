@@ -38,7 +38,7 @@ namespace System.Security.Cryptography.Asn1
         [AnyValue]
         internal ReadOnlyMemory<byte>? X400Address;
 
-        [ExpectedTag(4, ExplicitTag = true)]
+        [ExpectedTag(4)]
         [AnyValue]
         internal ReadOnlyMemory<byte>? DirectoryName;
 
@@ -70,7 +70,7 @@ namespace System.Security.Cryptography.Asn1
         [ObjectIdentifier]
         internal string TypeId;
 
-        [ExpectedTag(0, ExplicitTag = true)]
+        [ExpectedTag(0)]
         [AnyValue]
         internal ReadOnlyMemory<byte> Value;
     }

@@ -600,9 +600,6 @@
     <Compile Include="$(CommonPath)\Internal\Cryptography\AsymmetricAlgorithmHelpers.Hash.cs">
       <Link>Common\Internal\Cryptography\AsymmetricAlgorithmHelpers.Hash.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\System\Security\Cryptography\DerEncoder.cs">
-      <Link>Common\System\Security\Cryptography\DerEncoder.cs</Link>
-    </Compile>
     <Compile Include="$(CommonPath)\System\Security\Cryptography\DerSequenceReader.cs">
       <Link>Common\System\Security\Cryptography\DerSequenceReader.cs</Link>
     </Compile>

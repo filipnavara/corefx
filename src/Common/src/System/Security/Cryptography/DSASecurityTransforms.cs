@@ -173,7 +173,29 @@ namespace System.Security.Cryptography
                     
                     if (hasPrivateKey)
                     {
-                        blob = parameters.ToPrivateKeyBlob();
+                        Debug.Assert(parameters.X != null);
+
+                        // DSAPrivateKey ::= SEQUENCE(
+                        //   version INTEGER,
+                        //   p INTEGER,
+                        //   q INTEGER,
+                        //   g INTEGER,
+                        //   y INTEGER,
+                        //   x INTEGER,
+                        // )
+
+                        using (AsnWriter privateKeyWriter = new AsnWriter(AsnEncodingRules.DER))
+                        {
+                            privateKeyWriter.PushSequence();
+                            privateKeyWriter.WriteInteger(0);
+                            privateKeyWriter.WriteKeyParameterInteger(parameters.P);
+                            privateKeyWriter.WriteKeyParameterInteger(parameters.Q);
+                            privateKeyWriter.WriteKeyParameterInteger(parameters.G);
+                            privateKeyWriter.WriteKeyParameterInteger(parameters.Y);
+                            privateKeyWriter.WriteKeyParameterInteger(parameters.X);
+                            privateKeyWriter.PopSequence();
+                            blob = privateKeyWriter.Encode();
+                        }
                     }
                     else
                     {
@@ -328,34 +350,4 @@ namespace System.Security.Cryptography
         }
     }
 #endif
-
-    internal static class DsaKeyBlobHelpers
-    {
-        internal static byte[] ToPrivateKeyBlob(this DSAParameters parameters)
-        {
-            Debug.Assert(parameters.X != null);
-
-            // DSAPrivateKey ::= SEQUENCE(
-            //   version INTEGER,
-            //   p INTEGER,
-            //   q INTEGER,
-            //   g INTEGER,
-            //   y INTEGER,
-            //   x INTEGER,
-            // )
-
-            using (AsnWriter privateKeyWriter = new AsnWriter(AsnEncodingRules.DER))
-            {
-                privateKeyWriter.PushSequence();
-                privateKeyWriter.WriteInteger(0);
-                privateKeyWriter.WriteKeyParameterInteger(parameters.P);
-                privateKeyWriter.WriteKeyParameterInteger(parameters.Q);
-                privateKeyWriter.WriteKeyParameterInteger(parameters.G);
-                privateKeyWriter.WriteKeyParameterInteger(parameters.Y);
-                privateKeyWriter.WriteKeyParameterInteger(parameters.X);
-                privateKeyWriter.PopSequence();
-                return privateKeyWriter.Encode();
-            }
-        }
-    }
 }

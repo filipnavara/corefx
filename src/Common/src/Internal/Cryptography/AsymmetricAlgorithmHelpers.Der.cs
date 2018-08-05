@@ -31,8 +31,8 @@ namespace Internal.Cryptography
             using (AsnWriter writer = new AsnWriter(AsnEncodingRules.DER))
             {
                 writer.PushSequence();
-                writer.WriteInteger(new BigInteger(input.Slice(0, halfLength), isUnsigned: true, isBigEndian: true));
-                writer.WriteInteger(new BigInteger(input.Slice(halfLength, halfLength), isUnsigned: true, isBigEndian: true));
+                writer.WriteKeyParameterInteger(input.Slice(0, halfLength));
+                writer.WriteKeyParameterInteger(input.Slice(halfLength, halfLength));
                 writer.PopSequence();
                 return writer.Encode();
             }

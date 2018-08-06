@@ -296,8 +296,7 @@ namespace Internal.Cryptography.Pal
 
         private static int ReadInhibitAnyPolicyExtension(X509Extension extension)
         {
-            DerSequenceReader reader = DerSequenceReader.CreateForPayload(extension.RawData);
-            return reader.ReadInteger();
+            return AsnSerializer.Deserialize<int>(extension.RawData, AsnEncodingRules.DER);
         }
 
         private static void ReadCertPolicyConstraintsExtension(X509Extension extension, CertificatePolicy policy)

@@ -4,14 +4,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.Asn1;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Internal.Cryptography.Pal
 {
+    [StructLayout(LayoutKind.Sequential)]
     internal struct CertificatePolicyMapping
     {
+        [ObjectIdentifier]
         public string IssuerDomainPolicy;
+        [ObjectIdentifier]
         public string SubjectDomainPolicy;
     }
 
@@ -24,7 +29,7 @@ namespace Internal.Cryptography.Pal
         public bool SpecifiedAnyApplicationPolicy { get; set; }
         public ISet<string> DeclaredApplicationPolicies { get; set; }
         public int? InhibitAnyDepth { get; set; }
-        public List<CertificatePolicyMapping> PolicyMapping { get; set; }
+        public CertificatePolicyMapping[] PolicyMapping { get; set; }
         public int? InhibitMappingDepth { get; set; }
         public int? RequireExplicitPolicyDepth { get; set; }
 
@@ -86,10 +91,8 @@ namespace Internal.Cryptography.Pal
 
                 if (policy.PolicyMapping != null)
                 {
-                    for (int iMapping = 0; iMapping < policy.PolicyMapping.Count; iMapping++)
+                    foreach (CertificatePolicyMapping mapping in policy.PolicyMapping)
                     {
-                        CertificatePolicyMapping mapping = policy.PolicyMapping[iMapping];
-
                         if (StringComparer.Ordinal.Equals(mapping.IssuerDomainPolicy, oidToCheck))
                         {
                             nextOid = mapping.SubjectDomainPolicy;
@@ -362,23 +365,9 @@ namespace Internal.Cryptography.Pal
             return policies;
         }
 
-        private static List<CertificatePolicyMapping> ReadCertPolicyMappingsExtension(X509Extension extension)
+        private static CertificatePolicyMapping[] ReadCertPolicyMappingsExtension(X509Extension extension)
         {
-            DerSequenceReader reader = new DerSequenceReader(extension.RawData);
-            List<CertificatePolicyMapping> mappings = new List<CertificatePolicyMapping>();
-
-            while (reader.HasData)
-            {
-                DerSequenceReader mappingSequence = reader.ReadSequence();
-                mappings.Add(
-                    new CertificatePolicyMapping
-                    {
-                        IssuerDomainPolicy = mappingSequence.ReadOidAsString(),
-                        SubjectDomainPolicy = mappingSequence.ReadOidAsString(),
-                    });
-            }
-
-            return mappings;
+            return AsnSerializer.Deserialize<CertificatePolicyMapping[]>(extension.RawData, AsnEncodingRules.DER);
         }
     }
 }

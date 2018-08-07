@@ -8,18 +8,10 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Asn1;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.X509Certificates.Asn1;
 
 namespace Internal.Cryptography.Pal
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct CertificatePolicyMapping
-    {
-        [ObjectIdentifier]
-        public string IssuerDomainPolicy;
-        [ObjectIdentifier]
-        public string SubjectDomainPolicy;
-    }
-
     internal sealed class CertificatePolicy
     {
         public bool ImplicitAnyCertificatePolicy { get; set; }
@@ -28,10 +20,10 @@ namespace Internal.Cryptography.Pal
         public bool ImplicitAnyApplicationPolicy { get; set; }
         public bool SpecifiedAnyApplicationPolicy { get; set; }
         public ISet<string> DeclaredApplicationPolicies { get; set; }
-        public int? InhibitAnyDepth { get; set; }
-        public CertificatePolicyMapping[] PolicyMapping { get; set; }
-        public int? InhibitMappingDepth { get; set; }
-        public int? RequireExplicitPolicyDepth { get; set; }
+        public uint? InhibitAnyDepth { get; set; }
+        public CertificatePolicyMappingAsn[] PolicyMapping { get; set; }
+        public uint? InhibitMappingDepth { get; set; }
+        public uint? RequireExplicitPolicyDepth { get; set; }
 
         public bool AllowsAnyCertificatePolicy
         {
@@ -91,7 +83,7 @@ namespace Internal.Cryptography.Pal
 
                 if (policy.PolicyMapping != null)
                 {
-                    foreach (CertificatePolicyMapping mapping in policy.PolicyMapping)
+                    foreach (CertificatePolicyMappingAsn mapping in policy.PolicyMapping)
                     {
                         if (StringComparer.Ordinal.Equals(mapping.IssuerDomainPolicy, oidToCheck))
                         {
@@ -172,9 +164,9 @@ namespace Internal.Cryptography.Pal
                 _policies[i] = ReadPolicy(chain[i]);
             }
 
-            int explicitPolicyDepth = chain.Count;
-            int inhibitAnyPolicyDepth = explicitPolicyDepth;
-            int inhibitPolicyMappingDepth = explicitPolicyDepth;
+            uint explicitPolicyDepth = (uint)chain.Count;
+            uint inhibitAnyPolicyDepth = explicitPolicyDepth;
+            uint inhibitPolicyMappingDepth = explicitPolicyDepth;
 
             for (int i = 1; i <= chain.Count; i++)
             {
@@ -227,7 +219,7 @@ namespace Internal.Cryptography.Pal
             }
         }
 
-        private static void ApplyRestriction(ref int restriction, int? policyRestriction)
+        private static void ApplyRestriction(ref uint restriction, uint? policyRestriction)
         {
             if (policyRestriction.HasValue)
             {
@@ -294,41 +286,19 @@ namespace Internal.Cryptography.Pal
             return declaredPolicies.Remove(Oids.AnyCertPolicy);
         }
 
-        private static int ReadInhibitAnyPolicyExtension(X509Extension extension)
+        private static uint ReadInhibitAnyPolicyExtension(X509Extension extension)
         {
-            return AsnSerializer.Deserialize<int>(extension.RawData, AsnEncodingRules.DER);
+            return AsnSerializer.Deserialize<uint>(extension.RawData, AsnEncodingRules.DER);
         }
 
         private static void ReadCertPolicyConstraintsExtension(X509Extension extension, CertificatePolicy policy)
         {
-            DerSequenceReader reader = new DerSequenceReader(extension.RawData);
+            PolicyConstraintsAsn constraints = AsnSerializer.Deserialize<PolicyConstraintsAsn>(
+                extension.RawData,
+                AsnEncodingRules.DER);
 
-            while (reader.HasData)
-            {
-                // Policy Constraints context specific tag values are defined in RFC 3280 4.2.1.12,
-                // and restated (unchanged) in RFC 5280 4.2.1.11.
-                switch (reader.PeekTag())
-                {
-                    case DerSequenceReader.ContextSpecificTagFlag | 0:
-                        policy.RequireExplicitPolicyDepth = reader.ReadInteger();
-                        break;
-                    case DerSequenceReader.ContextSpecificTagFlag | 1:
-                        policy.InhibitMappingDepth = reader.ReadInteger();
-                        break;
-                    default:
-                        if (extension.Critical)
-                        {
-                            // If an unknown value is read, but we're marked as critical,
-                            // then we don't know what we're doing and MUST fail validation
-                            // (RFC 3280).
-                            // If it isn't critical then it means we're allowed to be ignorant
-                            // of data defined more recently than we understand.
-                            throw new CryptographicException();
-                        }
-
-                        break;
-                }
-            }
+            policy.RequireExplicitPolicyDepth = constraints.RequireExplicitPolicyDepth;
+            policy.InhibitMappingDepth = constraints.InhibitMappingDepth;
         }
 
         private static ISet<string> ReadExtendedKeyUsageExtension(X509Extension extension)
@@ -346,13 +316,14 @@ namespace Internal.Cryptography.Pal
 
         internal static ISet<string> ReadCertPolicyExtension(X509Extension extension)
         {
-            DerSequenceReader reader = new DerSequenceReader(extension.RawData);
-            HashSet<string> policies = new HashSet<string>();
+            PolicyInformationAsn[] policyInformations = AsnSerializer.Deserialize<PolicyInformationAsn[]>(
+                extension.RawData,
+                AsnEncodingRules.DER);
 
-            while (reader.HasData)
+            HashSet<string> policies = new HashSet<string>();
+            foreach (PolicyInformationAsn policyInformation in policyInformations)
             {
-                DerSequenceReader policyInformation = reader.ReadSequence();
-                policies.Add(policyInformation.ReadOidAsString());
+                policies.Add(policyInformation.PolicyIdentifier);
 
                 // There is an optional policy qualifier here, but it is for information
                 // purposes, there is no logic that would be changed.
@@ -364,9 +335,9 @@ namespace Internal.Cryptography.Pal
             return policies;
         }
 
-        private static CertificatePolicyMapping[] ReadCertPolicyMappingsExtension(X509Extension extension)
+        private static CertificatePolicyMappingAsn[] ReadCertPolicyMappingsExtension(X509Extension extension)
         {
-            return AsnSerializer.Deserialize<CertificatePolicyMapping[]>(extension.RawData, AsnEncodingRules.DER);
+            return AsnSerializer.Deserialize<CertificatePolicyMappingAsn[]>(extension.RawData, AsnEncodingRules.DER);
         }
     }
 }

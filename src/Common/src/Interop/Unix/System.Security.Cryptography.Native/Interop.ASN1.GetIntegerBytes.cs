@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.Asn1;
 using System.Text;
 
 using Microsoft.Win32.SafeHandles;
@@ -39,7 +40,7 @@ internal static partial class Interop
                 asn1Integer);
 
             AsnReader reader = new AsnReader(derEncoded, AsnEncodingRules.DER);
-            return reader.GetIntegerBytes();
+            return reader.GetIntegerBytes().ToArray();
         }
     }
 }

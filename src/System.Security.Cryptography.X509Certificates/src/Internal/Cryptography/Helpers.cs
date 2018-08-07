@@ -210,6 +210,54 @@ namespace Internal.Cryptography
         }
     }
 
+    internal static class DictionaryStringHelper
+    {
+        private static string TrimTrailingNulls(string value)
+        {
+            // .NET's string comparisons start by checking the length, so a trailing
+            // NULL character which was literally embedded in the DER would cause a
+            // failure in .NET whereas it wouldn't have with strcmp.
+            if (value?.Length > 0)
+            {
+                int newLength = value.Length;
+
+                while (newLength > 0 && value[newLength - 1] == 0)
+                {
+                    newLength--;
+                }
+
+                if (newLength != value.Length)
+                {
+                    return value.Substring(0, newLength);
+                }
+            }
+
+            return value;
+        }
+        
+        internal static string ReadDirectoryString(this AsnReader tavReader)
+        {
+            Asn1Tag tag = tavReader.PeekTag();
+
+            if (tag.TagClass != TagClass.Universal)
+            {
+                throw new CryptographicException(SR.Cryptography_Der_Invalid_Encoding);
+            }
+
+            switch ((UniversalTagNumber)tag.TagValue)
+            {
+                case UniversalTagNumber.BMPString:
+                case UniversalTagNumber.IA5String:
+                case UniversalTagNumber.PrintableString:
+                case UniversalTagNumber.UTF8String:
+                case UniversalTagNumber.T61String:
+                    return TrimTrailingNulls(tavReader.GetCharacterString((UniversalTagNumber)tag.TagValue));
+                default:
+                    throw new CryptographicException(SR.Cryptography_Der_Invalid_Encoding);
+            }
+        }
+    }
+
     internal struct PinAndClear : IDisposable
     {
         private byte[] _data;

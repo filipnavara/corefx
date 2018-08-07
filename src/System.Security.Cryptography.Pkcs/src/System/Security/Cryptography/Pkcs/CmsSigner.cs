@@ -128,7 +128,7 @@ namespace System.Security.Cryptography.Pkcs
             byte[] dataHash = hasher.GetHashAndReset();
 
             SignerInfoAsn newSignerInfo = new SignerInfoAsn();
-            newSignerInfo.DigestAlgorithm.Algorithm = DigestAlgorithm;
+            newSignerInfo.DigestAlgorithm.Algorithm = DigestAlgorithm.Value;
 
             // If the user specified attributes (not null, count > 0) we need attributes.
             // If the content type is null we're counter-signing, and need the message digest attr.
@@ -242,7 +242,7 @@ namespace System.Security.Cryptography.Pkcs
             }
 
             newSignerInfo.SignatureValue = signatureValue;
-            newSignerInfo.SignatureAlgorithm.Algorithm = signatureAlgorithm;
+            newSignerInfo.SignatureAlgorithm.Algorithm = signatureAlgorithm.Value;
 
             X509Certificate2Collection certs = new X509Certificate2Collection();
             certs.AddRange(Certificates);

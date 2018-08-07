@@ -224,7 +224,7 @@ namespace System.Security.Cryptography
                         {
                             Algorithm = new AlgorithmIdentifierAsn
                             {
-                                Algorithm = new Oid(Oids.Rsa),
+                                Algorithm = Oids.Rsa,
                                 Parameters = AlgorithmIdentifierAsn.ExplicitDerNull,
                             },
                             SubjectPublicKey = firstElement,

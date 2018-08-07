@@ -68,7 +68,7 @@ namespace Internal.Cryptography.Pal.AnyOS
 
                     ContentEncryptionAlgorithm =
                     {
-                        Algorithm = contentEncryptionAlgorithm.Oid,
+                        Algorithm = contentEncryptionAlgorithm.Oid.Value,
                         Parameters = parameterBytes,
                     },
 

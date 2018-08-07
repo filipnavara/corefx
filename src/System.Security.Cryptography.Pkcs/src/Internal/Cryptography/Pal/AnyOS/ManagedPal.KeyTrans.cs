@@ -40,7 +40,7 @@ namespace Internal.Cryptography.Pal.AnyOS
             internal byte[] DecryptCek(X509Certificate2 cert, RSA privateKey, out Exception exception)
             {
                 ReadOnlyMemory<byte>? parameters = _asn.KeyEncryptionAlgorithm.Parameters;
-                string keyEncryptionAlgorithm = _asn.KeyEncryptionAlgorithm.Algorithm.Value;
+                string keyEncryptionAlgorithm = _asn.KeyEncryptionAlgorithm.Algorithm;
 
                 switch (keyEncryptionAlgorithm)
                 {
@@ -63,7 +63,7 @@ namespace Internal.Cryptography.Pal.AnyOS
                     default:
                         exception = new CryptographicException(
                             SR.Cryptography_Cms_UnknownAlgorithm,
-                            _asn.KeyEncryptionAlgorithm.Algorithm.Value);
+                            _asn.KeyEncryptionAlgorithm.Algorithm);
 
                         return null;
                 }
@@ -148,12 +148,12 @@ namespace Internal.Cryptography.Pal.AnyOS
             {
                 case Oids.RsaOaep:
                     padding = RSAEncryptionPadding.OaepSHA1;
-                    ktri.KeyEncryptionAlgorithm.Algorithm = new Oid(Oids.RsaOaep, Oids.RsaOaep);
+                    ktri.KeyEncryptionAlgorithm.Algorithm = Oids.RsaOaep;
                     ktri.KeyEncryptionAlgorithm.Parameters = s_rsaOaepSha1Parameters;
                     break;
                 default:
                     padding = RSAEncryptionPadding.Pkcs1;
-                    ktri.KeyEncryptionAlgorithm.Algorithm = new Oid(Oids.Rsa, Oids.Rsa);
+                    ktri.KeyEncryptionAlgorithm.Algorithm = Oids.Rsa;
                     ktri.KeyEncryptionAlgorithm.Parameters = s_rsaPkcsParameters;
                     break;
             }

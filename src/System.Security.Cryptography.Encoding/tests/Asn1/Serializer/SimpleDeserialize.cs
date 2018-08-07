@@ -34,7 +34,7 @@ namespace System.Security.Cryptography.Tests.Asn1
                 inputData,
                 (AsnEncodingRules)ruleSet);
 
-            Assert.Equal("1.2.840.10045.2.1", algorithmIdentifier.Algorithm.Value);
+            Assert.Equal("1.2.840.10045.2.1", algorithmIdentifier.Algorithm);
             
             var reader = new AsnReader(algorithmIdentifier.Parameters.Value, (AsnEncodingRules)ruleSet);
             Oid curveId = reader.ReadObjectIdentifier(skipFriendlyName: true);
@@ -161,7 +161,7 @@ namespace System.Security.Cryptography.Tests.Asn1
                 inputData,
                 AsnEncodingRules.DER);
 
-            Assert.Equal("1.2.840.10045.2.1", spki.Algorithm.Algorithm.Value);
+            Assert.Equal("1.2.840.10045.2.1", spki.Algorithm.Algorithm);
             Assert.Equal(PublicKeyValue, spki.SubjectPublicKey.ByteArrayToHex());
 
             AsnReader reader = new AsnReader(spki.Algorithm.Parameters.Value, AsnEncodingRules.DER);

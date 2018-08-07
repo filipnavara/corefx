@@ -35,7 +35,7 @@ namespace Internal.Cryptography.Pal
         {
             public AlgorithmIdentifier(AlgorithmIdentifierAsn algorithmIdentifier)
             {
-                AlgorithmId = algorithmIdentifier.Algorithm.Value;
+                AlgorithmId = algorithmIdentifier.Algorithm;
                 Parameters = algorithmIdentifier.Parameters?.ToArray() ?? Array.Empty<byte>();
             }
 

@@ -18,7 +18,7 @@ namespace System.Security.Cryptography.Tests.Asn1
         {
             AlgorithmIdentifierAsn identifier = new AlgorithmIdentifierAsn
             {
-                Algorithm = new Oid(null, "SHA-2-256"),
+                Algorithm = null,
                 Parameters = new byte[] { 5, 0 },
             };
 
@@ -44,7 +44,7 @@ namespace System.Security.Cryptography.Tests.Asn1
         {
             AlgorithmIdentifierAsn identifier = new AlgorithmIdentifierAsn
             {
-                Algorithm = new Oid("2.16.840.1.101.3.4.2.1", "SHA-2-256"),
+                Algorithm = "2.16.840.1.101.3.4.2.1",
                 Parameters = new byte[] { 5, 0 },
             };
 
@@ -64,7 +64,7 @@ namespace System.Security.Cryptography.Tests.Asn1
         {
             AlgorithmIdentifierAsn identifier = new AlgorithmIdentifierAsn
             {
-                Algorithm = new Oid("2.16.840.1.101.3.4.2.1", "SHA-2-256"),
+                Algorithm = "2.16.840.1.101.3.4.2.1",
                 Parameters = new byte[] { 5, 0 },
             };
 

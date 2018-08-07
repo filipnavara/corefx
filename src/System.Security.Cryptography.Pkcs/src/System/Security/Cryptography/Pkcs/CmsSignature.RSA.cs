@@ -184,12 +184,12 @@ namespace System.Security.Cryptography.Pkcs
                 PssParamsAsn pssParams =
                     AsnSerializer.Deserialize<PssParamsAsn>(signatureParameters.Value, AsnEncodingRules.DER);
 
-                if (pssParams.HashAlgorithm.Algorithm.Value != digestAlgorithmOid)
+                if (pssParams.HashAlgorithm.Algorithm != digestAlgorithmOid)
                 {
                     throw new CryptographicException(
                         SR.Format(
                             SR.Cryptography_Pkcs_PssParametersHashMismatch,
-                            pssParams.HashAlgorithm.Algorithm.Value,
+                            pssParams.HashAlgorithm.Algorithm,
                             digestAlgorithmOid));
                 }
 
@@ -207,11 +207,11 @@ namespace System.Security.Cryptography.Pkcs
                             digestAlgorithmName.Name));
                 }
 
-                if (pssParams.MaskGenAlgorithm.Algorithm.Value != Oids.Mgf1)
+                if (pssParams.MaskGenAlgorithm.Algorithm != Oids.Mgf1)
                 {
                     throw new CryptographicException(
                         SR.Cryptography_Pkcs_PssParametersMgfNotSupported,
-                        pssParams.MaskGenAlgorithm.Algorithm.Value);
+                        pssParams.MaskGenAlgorithm.Algorithm);
                 }
 
                 if (pssParams.MaskGenAlgorithm.Parameters == null)
@@ -223,12 +223,12 @@ namespace System.Security.Cryptography.Pkcs
                     pssParams.MaskGenAlgorithm.Parameters.Value,
                     AsnEncodingRules.DER);
 
-                if (mgfParams.Algorithm.Value != digestAlgorithmOid)
+                if (mgfParams.Algorithm != digestAlgorithmOid)
                 {
                     throw new CryptographicException(
                         SR.Format(
                             SR.Cryptography_Pkcs_PssParametersMgfHashMismatch,
-                            mgfParams.Algorithm.Value,
+                            mgfParams.Algorithm,
                             digestAlgorithmOid));
                 }
 

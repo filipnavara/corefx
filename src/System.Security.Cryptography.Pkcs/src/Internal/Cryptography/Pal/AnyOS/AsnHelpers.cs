@@ -55,7 +55,7 @@ namespace Internal.Cryptography.Pal.AnyOS
         {
             int keyLength;
 
-            switch (asn.Algorithm.Value)
+            switch (asn.Algorithm)
             {
                 case Oids.Rc2Cbc:
                     {

@@ -101,7 +101,7 @@ namespace Internal.Cryptography.Pal
             {
                 SubjectPublicKeyInfoAsn spki = new SubjectPublicKeyInfoAsn
                 {
-                    Algorithm = new AlgorithmIdentifierAsn { Algorithm = new Oid(Oids.Dsa), Parameters = encodedParameters },
+                    Algorithm = new AlgorithmIdentifierAsn { Algorithm = Oids.Dsa, Parameters = encodedParameters },
                     SubjectPublicKey = encodedKeyValue,
                 };
 

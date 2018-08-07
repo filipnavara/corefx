@@ -44,7 +44,7 @@ namespace System.Security.Cryptography.Pkcs
             HashAlgorithmName hashAlgorithm;
             int expectedOutputSize;
 
-            string algorithmValue = _decoded.MacData.Value.Mac.DigestAlgorithm.Algorithm.Value;
+            string algorithmValue = _decoded.MacData.Value.Mac.DigestAlgorithm.Algorithm;
 
             switch (algorithmValue)
             {

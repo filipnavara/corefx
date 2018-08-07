@@ -16,15 +16,15 @@ namespace System.Security.Cryptography.Asn1
     {
         internal static readonly ReadOnlyMemory<byte> ExplicitDerNull = new byte[] { 0x05, 0x00 };
 
-        [ObjectIdentifier(PopulateFriendlyName = true)]
-        public Oid Algorithm;
+        [ObjectIdentifier]
+        public string Algorithm;
 
         [AnyValue, OptionalValue]
         public ReadOnlyMemory<byte>? Parameters;
 
         internal bool Equals(ref AlgorithmIdentifierAsn other)
         {
-            if (Algorithm.Value != other.Algorithm.Value)
+            if (Algorithm != other.Algorithm)
             {
                 return false;
             }

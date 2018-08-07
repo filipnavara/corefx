@@ -520,7 +520,7 @@ namespace System.Security.Cryptography.Pkcs
                     else
                     {
                         Debug.Fail(
-                            $"TryGetCertHash did not fit in {thumbprint.Length} for hash {certId2.HashAlgorithm.Algorithm.Value}");
+                            $"TryGetCertHash did not fit in {thumbprint.Length} for hash {certId2.HashAlgorithm.Algorithm}");
 
                         thumbprint = signerCert.GetCertHash(alg);
                     }

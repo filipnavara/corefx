@@ -84,7 +84,7 @@ namespace System.Security.Cryptography
 
             bool pkcs12 = false;
 
-            switch (algorithmIdentifier.Algorithm.Value)
+            switch (algorithmIdentifier.Algorithm)
             {
                 case Oids.PbeWithMD5AndDESCBC:
                     digestAlgorithmName = HashAlgorithmName.MD5;
@@ -136,7 +136,7 @@ namespace System.Security.Cryptography
                     throw new CryptographicException(
                         SR.Format(
                             SR.Cryptography_UnknownAlgorithmIdentifier,
-                            algorithmIdentifier.Algorithm.Value));
+                            algorithmIdentifier.Algorithm));
             }
 
             Debug.Assert(digestAlgorithmName.Name != null);
@@ -148,7 +148,7 @@ namespace System.Security.Cryptography
                 {
                     if (password.IsEmpty && passwordBytes.Length > 0)
                     {
-                        throw AlgorithmKdfRequiresChars(algorithmIdentifier.Algorithm.Value);
+                        throw AlgorithmKdfRequiresChars(algorithmIdentifier.Algorithm);
                     }
 
                     return Pkcs12PbeDecrypt(
@@ -490,12 +490,12 @@ namespace System.Security.Cryptography
             PBES2Params pbes2Params =
                 AsnSerializer.Deserialize<PBES2Params>(algorithmParameters.Value, AsnEncodingRules.BER);
 
-            if (pbes2Params.KeyDerivationFunc.Algorithm.Value != Oids.Pbkdf2)
+            if (pbes2Params.KeyDerivationFunc.Algorithm != Oids.Pbkdf2)
             {
                 throw new CryptographicException(
                     SR.Format(
                         SR.Cryptography_UnknownAlgorithmIdentifier,
-                        pbes2Params.EncryptionScheme.Algorithm.Value));
+                        pbes2Params.EncryptionScheme.Algorithm));
             }
 
             Rfc2898DeriveBytes pbkdf2 =
@@ -537,7 +537,7 @@ namespace System.Security.Cryptography
             byte? requestedKeyLength,
             ref Span<byte> iv)
         {
-            string algId = encryptionScheme.Algorithm.Value;
+            string algId = encryptionScheme.Algorithm;
 
             if (algId == Oids.Aes128Cbc ||
                 algId == Oids.Aes192Cbc ||
@@ -699,7 +699,7 @@ namespace System.Security.Cryptography
 
             HashAlgorithmName prf;
 
-            switch (pbkdf2Params.Prf.Algorithm.Value)
+            switch (pbkdf2Params.Prf.Algorithm)
             {
                 case Oids.HmacWithSha1:
                     prf = HashAlgorithmName.SHA1;

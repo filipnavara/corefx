@@ -74,8 +74,8 @@ namespace System.Security.Cryptography.X509Certificates
 
             PssParamsAsn parameters = new PssParamsAsn
             {
-                HashAlgorithm = new AlgorithmIdentifierAsn { Algorithm = new Oid(digestOid) },
-                MaskGenAlgorithm = new AlgorithmIdentifierAsn { Algorithm = new Oid(Oids.Mgf1) },
+                HashAlgorithm = new AlgorithmIdentifierAsn { Algorithm = digestOid },
+                MaskGenAlgorithm = new AlgorithmIdentifierAsn { Algorithm = Oids.Mgf1 },
                 SaltLength = cbSalt,
                 TrailerField = 1,
             };
@@ -92,7 +92,7 @@ namespace System.Security.Cryptography.X509Certificates
             {
                 AlgorithmIdentifierAsn identifier = new AlgorithmIdentifierAsn
                 {
-                    Algorithm = new Oid(Oids.RsaPss),
+                    Algorithm = Oids.RsaPss,
                     Parameters = writer.Encode(),
                 };
 

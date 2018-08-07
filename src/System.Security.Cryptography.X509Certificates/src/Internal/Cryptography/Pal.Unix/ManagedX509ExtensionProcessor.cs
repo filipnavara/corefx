@@ -189,9 +189,15 @@ namespace Internal.Cryptography.Pal
             // The CapiSha1 value is the SHA-1 of the SubjectPublicKeyInfo field, inclusive
             // of the DER structural bytes.
 
-            SubjectPublicKeyInfoAsn spki = new SubjectPublicKeyInfoAsn();
-            spki.Algorithm = new AlgorithmIdentifierAsn { Algorithm = key.Oid, Parameters = key.EncodedParameters.RawData };
-            spki.SubjectPublicKey = key.EncodedKeyValue.RawData;
+            SubjectPublicKeyInfoAsn spki = new SubjectPublicKeyInfoAsn
+            {
+                Algorithm = new AlgorithmIdentifierAsn
+                {
+                    Algorithm = key.Oid.Value,
+                    Parameters = key.EncodedParameters.RawData
+                },
+                SubjectPublicKey = key.EncodedKeyValue.RawData,
+            };
 
             using (AsnWriter writer = AsnSerializer.Serialize(spki, AsnEncodingRules.DER))
             using (SHA1 hash = SHA1.Create())

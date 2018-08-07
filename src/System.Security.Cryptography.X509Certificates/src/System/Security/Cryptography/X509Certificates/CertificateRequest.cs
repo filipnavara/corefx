@@ -553,7 +553,7 @@ namespace System.Security.Cryptography.X509Certificates
                 {
                     Algorithm = new AlgorithmIdentifierAsn
                     {
-                        Algorithm = PublicKey.Oid,
+                        Algorithm = PublicKey.Oid.Value,
                         Parameters = PublicKey.EncodedParameters.RawData,
                     },
                     SubjectPublicKey = PublicKey.EncodedKeyValue.RawData,

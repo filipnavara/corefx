@@ -55,7 +55,7 @@ namespace System.Security.Cryptography.X509Certificates
             }
 
             SubjectPublicKeyInfoAsn spki = new SubjectPublicKeyInfoAsn();
-            spki.Algorithm = new AlgorithmIdentifierAsn { Algorithm = PublicKey.Oid, Parameters = PublicKey.EncodedParameters.RawData };
+            spki.Algorithm = new AlgorithmIdentifierAsn { Algorithm = PublicKey.Oid.Value, Parameters = PublicKey.EncodedParameters.RawData };
             spki.SubjectPublicKey = PublicKey.EncodedKeyValue.RawData;
 
             CertificationRequestInfoAsn requestInfo = new CertificationRequestInfoAsn

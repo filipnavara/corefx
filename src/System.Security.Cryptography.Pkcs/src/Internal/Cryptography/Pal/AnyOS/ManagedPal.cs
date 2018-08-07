@@ -138,7 +138,7 @@ namespace Internal.Cryptography.Pal.AnyOS
 
         private static SymmetricAlgorithm OpenAlgorithm(AlgorithmIdentifier algorithmIdentifier)
         {
-            SymmetricAlgorithm alg = OpenAlgorithm(algorithmIdentifier.Oid);
+            SymmetricAlgorithm alg = OpenAlgorithm(algorithmIdentifier.Oid.Value);
 
             if (alg is RC2)
             {
@@ -155,13 +155,13 @@ namespace Internal.Cryptography.Pal.AnyOS
             return alg;
         }
 
-        private static SymmetricAlgorithm OpenAlgorithm(Oid algorithmIdentifier)
+        private static SymmetricAlgorithm OpenAlgorithm(string algorithmIdentifier)
         {
             Debug.Assert(algorithmIdentifier != null);
 
             SymmetricAlgorithm alg;
 
-            switch (algorithmIdentifier.Value)
+            switch (algorithmIdentifier)
             {
                 case Oids.Rc2Cbc:
 #pragma warning disable CA5351
@@ -191,7 +191,7 @@ namespace Internal.Cryptography.Pal.AnyOS
                     alg.KeySize = 256;
                     break;
                 default:
-                    throw new CryptographicException(SR.Cryptography_Cms_UnknownAlgorithm, algorithmIdentifier.Value);
+                    throw new CryptographicException(SR.Cryptography_Cms_UnknownAlgorithm, algorithmIdentifier);
             }
 
             // These are the defaults, but they're restated here for clarity.

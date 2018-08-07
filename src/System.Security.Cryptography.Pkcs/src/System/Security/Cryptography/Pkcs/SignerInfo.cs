@@ -37,9 +37,9 @@ namespace System.Security.Cryptography.Pkcs
         {
             Version = parsedData.Version;
             SignerIdentifier = new SubjectIdentifier(parsedData.Sid);
-            _digestAlgorithm = parsedData.DigestAlgorithm.Algorithm;
+            _digestAlgorithm = new Oid(parsedData.DigestAlgorithm.Algorithm);
             _signedAttributesMemory = parsedData.SignedAttributes;
-            _signatureAlgorithm = parsedData.SignatureAlgorithm.Algorithm;
+            _signatureAlgorithm = new Oid(parsedData.SignatureAlgorithm.Algorithm);
             _signatureAlgorithmParameters = parsedData.SignatureAlgorithm.Parameters;
             _signature = parsedData.SignatureValue;
             _unsignedAttributes = parsedData.UnsignedAttributes;

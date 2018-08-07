@@ -40,7 +40,7 @@ namespace System.Security.Cryptography
             SubjectPublicKeyInfoAsn spki =
                 AsnSerializer.Deserialize<SubjectPublicKeyInfoAsn>(source, AsnEncodingRules.DER, out int read);
 
-            if (Array.IndexOf(validOids, spki.Algorithm.Algorithm.Value) < 0)
+            if (Array.IndexOf(validOids, spki.Algorithm.Algorithm) < 0)
             {
                 throw new CryptographicException(SR.Cryptography_NotValidPublicOrPrivateKey);
             }
@@ -61,7 +61,7 @@ namespace System.Security.Cryptography
             SubjectPublicKeyInfoAsn spki =
                 AsnSerializer.Deserialize<SubjectPublicKeyInfoAsn>(source, AsnEncodingRules.DER, out int read);
 
-            if (Array.IndexOf(validOids, spki.Algorithm.Algorithm.Value) < 0)
+            if (Array.IndexOf(validOids, spki.Algorithm.Algorithm) < 0)
             {
                 throw new CryptographicException(SR.Cryptography_NotValidPublicOrPrivateKey);
             }
@@ -109,7 +109,7 @@ namespace System.Security.Cryptography
             PrivateKeyInfoAsn privateKeyInfo =
                 AsnSerializer.Deserialize<PrivateKeyInfoAsn>(source, AsnEncodingRules.BER, out int read);
 
-            if (Array.IndexOf(validOids, privateKeyInfo.PrivateKeyAlgorithm.Algorithm.Value) < 0)
+            if (Array.IndexOf(validOids, privateKeyInfo.PrivateKeyAlgorithm.Algorithm) < 0)
             {
                 throw new CryptographicException(SR.Cryptography_NotValidPublicOrPrivateKey);
             }
@@ -128,7 +128,7 @@ namespace System.Security.Cryptography
             PrivateKeyInfoAsn privateKeyInfo =
                 AsnSerializer.Deserialize<PrivateKeyInfoAsn>(source, AsnEncodingRules.BER, out int read);
 
-            if (Array.IndexOf(validOids, privateKeyInfo.PrivateKeyAlgorithm.Algorithm.Value) < 0)
+            if (Array.IndexOf(validOids, privateKeyInfo.PrivateKeyAlgorithm.Algorithm) < 0)
             {
                 throw new CryptographicException(SR.Cryptography_NotValidPublicOrPrivateKey);
             }

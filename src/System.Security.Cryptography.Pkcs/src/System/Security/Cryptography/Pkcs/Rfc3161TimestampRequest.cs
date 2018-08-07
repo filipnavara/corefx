@@ -22,7 +22,7 @@ namespace System.Security.Cryptography.Pkcs
 
         public int Version => _parsedData.Version;
         public ReadOnlyMemory<byte> GetMessageHash() => _parsedData.MessageImprint.HashedMessage;
-        public Oid HashAlgorithmId => _parsedData.MessageImprint.HashAlgorithm.Algorithm;
+        public Oid HashAlgorithmId => new Oid(_parsedData.MessageImprint.HashAlgorithm.Algorithm);
         public Oid RequestedPolicyId => _parsedData.ReqPolicy;
         public bool RequestSignerCertificate => _parsedData.CertReq;
         public ReadOnlyMemory<byte>? GetNonce() => _parsedData.Nonce;
@@ -290,7 +290,7 @@ namespace System.Security.Cryptography.Pkcs
                 {
                     HashAlgorithm =
                     {
-                        Algorithm = hashAlgorithmId,
+                        Algorithm = hashAlgorithmId.Value,
                         Parameters = AlgorithmIdentifierAsn.ExplicitDerNull,
                     },
 

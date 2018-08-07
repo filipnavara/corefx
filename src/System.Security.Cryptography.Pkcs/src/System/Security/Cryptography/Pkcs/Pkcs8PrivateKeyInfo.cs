@@ -69,7 +69,7 @@ namespace System.Security.Cryptography.Pkcs
                 AsnSerializer.Deserialize<PrivateKeyInfoAsn>(source, AsnEncodingRules.BER, out bytesRead);
 
             return new Pkcs8PrivateKeyInfo(
-                privateKeyInfo.PrivateKeyAlgorithm.Algorithm,
+                new Oid(privateKeyInfo.PrivateKeyAlgorithm.Algorithm),
                 privateKeyInfo.PrivateKeyAlgorithm.Parameters,
                 privateKeyInfo.PrivateKey,
                 SignerInfo.MakeAttributeCollection(privateKeyInfo.Attributes));
@@ -237,7 +237,7 @@ namespace System.Security.Cryptography.Pkcs
             {
                 PrivateKeyAlgorithm =
                 {
-                    Algorithm = AlgorithmId,
+                    Algorithm = AlgorithmId.Value,
                 },
                 PrivateKey = PrivateKeyBytes,
             };

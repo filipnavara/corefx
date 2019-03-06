@@ -37,12 +37,6 @@ DLLEXPORT void SystemNative_MonitorRelease(Monitor *monitor);
 
 /**
  * Releases the lock on an object and blocks the current thread until the
- * monitor is signalled, then it reacquires the lock.
- */
-DLLEXPORT void SystemNative_MonitorWait(Monitor *monitor);
-
-/**
- * Releases the lock on an object and blocks the current thread until the
  * monitor is signalled, then it reacquires the lock. If the specified time-out
  * interval elapses, the wait is aborted.
  * 
@@ -56,3 +50,13 @@ DLLEXPORT int32_t SystemNative_MonitorTimedWait(Monitor *monitor, int32_t timeou
  * managed code it doesn't reacquire the lock.
  */
 DLLEXPORT void SystemNative_MonitorSignalAndRelease(Monitor *monitor);
+
+typedef struct LifoSemaphore LifoSemaphore;
+
+DLLEXPORT LifoSemaphore *SystemNative_LifoSemaphoreNew(void);
+
+DLLEXPORT void SystemNative_LifoSemaphoreDelete(LifoSemaphore *semaphore);
+
+DLLEXPORT int32_t SystemNative_LifoSemaphoreTimedWait(LifoSemaphore *semaphore, int32_t timeoutMilliseconds);
+
+DLLEXPORT void SystemNative_LifoSemaphoreRelease(LifoSemaphore *semaphore, uint32_t count);
